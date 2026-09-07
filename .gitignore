@@ -1,5 +1,4 @@
 env.text
 .venv/
-ymrental/__pycache__/
-book/__pycache__/
-555
+__pycache__/
+*.pyc
