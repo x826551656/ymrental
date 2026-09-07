@@ -15,9 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from houses import views
+from django.urls import path,include,reverse
+from django.http import HttpResponse
+
+def index(response):
+    data=reverse('houses:list1')
+    return HttpResponse(data)
+
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/houses/",views.house_list),
+    path("index/",index),
+    path("houses/",include("houses.urls")),
 ]
