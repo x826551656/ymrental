@@ -16,9 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.views import View
-from  book import views
+from houses import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-   path("book/",views.search_id)
+    path("api/houses/",views.house_list),
 ]

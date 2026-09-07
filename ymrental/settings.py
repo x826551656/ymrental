@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'houses',
 ]
 
 MIDDLEWARE = [
@@ -74,8 +75,15 @@ WSGI_APPLICATION = 'ymrental.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        "NAME":"HouseRental",
+        "USER":"root",
+        "PASSWORD":"RjXYrZTYZrLFmrzd",
+        "HOST":"82.157.130.206",
+        "PORT":"13306",
+        "OPTIONS":{
+            "charset":"utf8mb4",
+        },
     }
 }
 
