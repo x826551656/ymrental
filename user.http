@@ -1,0 +1,14 @@
+POST http://127.0.0.1:8000/houses/api/login
+Content-Type: application/json
+
+{
+"phone":"15587497585",
+}
+###
+
+PATCH http://127.0.0.1:8000/houses/api/user/to_landlord
+Content-Type: application/json
+
+{
+    "phone":"12345678901"
+}

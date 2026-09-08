@@ -102,6 +102,7 @@ def login(request):
         #     )
         
         # 6. 生成 JWT Token
+        # pyrefly: ignore [bad-specialization]
         refresh = RefreshToken.for_user(user)
         
         # 7. 返回成功信息
@@ -127,3 +128,41 @@ def login(request):
             {'code': 500, 'message': f'登录失败: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['PATCH'])
+def update_user_to_landlord(request):
+    """
+    将用户角色更新为房东
+    请求体: {
+        "phone": ”12345678901”,
+    }
+    """
+    try:
+        phone=request.data.get('phone')
+        if(not phone):
+            return Response({
+                "code":"400",
+                "massage":"用户手机不能为空"
+            },status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user=Users.objects.get(phone=phone)
+        except Users.DoesNotExist:
+            return Response({
+                'code':'400','message':'所请求的用户不存在！'
+            },status=status.HTTP_400_BAD_REQUEST)
+        if user.role=="业主":
+            return Response({
+                "code":"400",
+                "message":"用户已是房东"
+            },status=status.HTTP_400_BAD_REQUEST)
+        user.role="业主"
+        user.save()
+        return Response({
+            "code":"200","message":"successs!"
+
+        },status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({
+            'code':'500','message':f'切换失败{str(e)}'
+        },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

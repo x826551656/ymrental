@@ -2,3 +2,4 @@ project-includes = [
     "**/*.py*",
     "**/*.ipynb",
 ]
+python-interpreter = ".venv/bin/python"
