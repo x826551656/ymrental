@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .temp_models import Houses
+from .models import Houses
 # Create your views here.
 def house_list(request):
     houses=Houses.objects.all()

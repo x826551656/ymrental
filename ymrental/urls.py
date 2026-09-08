@@ -16,15 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include,reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 def index(response):
     data=reverse('houses:list1')
     return HttpResponse(data)
 
-
+def main(response):
+    return HttpResponse("非法访问数据库地址！")
 
 urlpatterns = [
+    path("",main),
     path('admin/', admin.site.urls),
     path("index/",index),
     path("houses/",include("houses.urls")),
