@@ -1,4 +1,6 @@
 env.text
 .venv/
-__pycache__/
+**/__pycache__/
 *.pyc
+houses/__pycache__
+.vscode/

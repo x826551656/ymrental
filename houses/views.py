@@ -30,10 +30,12 @@ def register(request):
         #     },status=status.HTTP_400_BAD_REQUEST
         #     )
 
+        # pyrefly: ignore [missing-attribute]
         if Users.objects.filter(phone=phone).exists():
             return Response({"code":400,"message":"手机号已被注册"
             },status=status.HTTP_400_BAD_REQUEST
             )
+        # pyrefly: ignore [missing-attribute]
         user=Users.objects.create(
             phone=phone,
             email=email,
@@ -75,7 +77,9 @@ def login(request):
         
         # 3. 查询用户
         try:
+            # pyrefly: ignore [missing-attribute]
             user = Users.objects.get(phone=phone)
+        # pyrefly: ignore [missing-attribute]
         except Users.DoesNotExist:
             # 为了安全，不要明确说"用户不存在"，统一说"用户名或密码错误"
             return Response(

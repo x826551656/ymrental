@@ -3,6 +3,7 @@ from .models import Houses, Users
 
 # Register your models here.
 class UserAdmin(admin.ModelAdmin):
+    # pyrefly: ignore [bad-override-mutable-attribute]
     list_display=("user_id","username","real_name","phone","email",
                   "role","id_card","gender","status")
     search_fields=("username","phone")
@@ -11,6 +12,7 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(Users,UserAdmin)
 
 class HousesAdmin(admin.ModelAdmin):
+    # pyrefly: ignore [bad-override-mutable-attribute]
     list_display=("house_id","owner_id__username","title","address",
                   "business_area","house_type","layout","area_sqm",
                   "orientation","floor_info","decoration","monthly_rent","deposit","status")
