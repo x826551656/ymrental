@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Houses,Users
+from.favorites import Favorites
 # Create your views here.
 @api_view(['POST'])
 def register(request):
@@ -166,3 +167,17 @@ def update_user_to_landlord(request):
             'code':'500','message':f'切换失败{str(e)}'
         },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['POST'])
+def add_favor(request):
+    """
+    {
+    'phone':"1",
+    "house_id":""
+    }
+    """
+    phone=request.data.get('phone')
+    house_id=request.data.get('house_id')
+    if not Favorites.objects.filter(house_id=house_id and phone=phone)
+    return Response({
+        'code':'200','message':'suceess!'
+    },status=status.HTTP_200_OK)
