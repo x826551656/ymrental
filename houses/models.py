@@ -6,20 +6,20 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-
+from shortuuidfield import ShortUUIDField
 
 class Users(models.Model):
-    user_id = models.CharField(primary_key=True, max_length=32)
+    user_id = ShortUUIDField(primary_key=True)
     username = models.CharField(unique=True, max_length=30)
     password = models.CharField(max_length=255)
-    real_name = models.CharField(max_length=20)
+    real_name = models.CharField(max_length=20,blank=True)
     phone = models.CharField(unique=True, max_length=11)
     email = models.CharField(max_length=50, blank=True, null=True)
     role = models.CharField(max_length=32)
     id_card = models.CharField(unique=True, max_length=18, blank=True, null=True)
     gender = models.CharField(max_length=2, blank=True, null=True)
     status = models.CharField(max_length=32)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = False

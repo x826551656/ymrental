@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +38,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'houses',
 ]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+from datetime import timedelta
+SIMPLE_JWT = {
+    'USER_ID_FIELD': 'user_id', 
+    'USER_ID_CLAIM': 'user_id',
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),  # access token 有效期2小时
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # refresh token 有效期7天
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

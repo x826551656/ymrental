@@ -1,19 +1,125 @@
 from django.shortcuts import render
-from django.http import JsonResponse
-from .models import Houses
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .models import Houses,Users
 # Create your views here.
-def house_list(request):
-    houses=Houses.objects.all()
-    data=[]
-    for house in houses:
-        data.append({
-            "house_id":house.house_id,
-            "title":house.title,
-            "bsa":house.business_area
-        })
-    return JsonResponse({
-            "code":200,
-            "message":"查询成功",
-            "data":data
-        })
-    
+@api_view(['POST'])
+def register(request):
+    """
+    注册接口
+    请求体: {
+        "username": "zhangsan",
+        "password": "123456",
+        "phone": "13800138000",
+        "email": "test@example.com",
+        "real_name": "张三"
+    }
+    """
+    try:
+        phone=request.data.get("phone")
+        email=request.data.get("email")
+        real_name=request.data.get("real_name")
+        # if not password:
+        #     return Response({
+        #         "code":400,"message":"密码不能为空"
+        #     },status=status.HTTP_400_BAD_REQUEST
+        #     )
+
+        if Users.objects.filter(phone=phone).exists():
+            return Response({"code":400,"message":"手机号已被注册"
+            },status=status.HTTP_400_BAD_REQUEST
+            )
+        user=Users.objects.create(
+            phone=phone,
+            email=email,
+            real_name=real_name,
+            role="租客",
+            status="正常")
+        return Response({
+             'code': 200,
+            'message': '注册成功',
+            'data': {
+                'phone': user.phone,
+            }
+        }, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response(
+            {'code': 500, 'message': f'注册失败: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['POST'])
+def login(request):
+    """
+    登录接口
+    请求体: {
+        "phone": "",
+        "password": "123456"
+    }
+    """
+    try:
+        # 1. 获取参数
+        phone = request.data.get('phone')
+        
+        # 2. 参数校验
+        if not phone:
+            return Response(
+                {'code': 400, 'message': '用户名和密码不能为空'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # 3. 查询用户
+        try:
+            user = Users.objects.get(phone=phone)
+        except Users.DoesNotExist:
+            # 为了安全，不要明确说"用户不存在"，统一说"用户名或密码错误"
+            return Response(
+                {'code': 401, 'message': '用户名或密码错误'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # 4. 检查用户状态
+        if user.status != '正常':
+            return Response(
+                {'code': 403, 'message': f'账户状态：{user.status}，请联系管理员'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # 5. 验证密码
+        # if not check_password(password, user.password):
+        #     return Response(
+        #         {'code': 401, 'message': '用户名或密码错误'},
+        #         status=status.HTTP_401_UNAUTHORIZED
+        #     )
+        
+        # 6. 生成 JWT Token
+        refresh = RefreshToken.for_user(user)
+        
+        # 7. 返回成功信息
+        return Response({
+            'code': 200,
+            'message': '登录成功',
+            'data': {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'user': {
+                    'user_id': user.user_id,
+                    'username': user.username,
+                    'real_name': user.real_name,
+                    'phone': user.phone,
+                    'email': user.email,
+                    'role': user.role
+                }
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response(
+            {'code': 500, 'message': f'登录失败: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
