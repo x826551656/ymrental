@@ -1,3 +1,5 @@
+from urllib import response
+
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -171,13 +173,41 @@ def update_user_to_landlord(request):
 def add_favor(request):
     """
     {
-    'phone':"1",
+    'user_id':"1",
     "house_id":""
     }
     """
-    phone=request.data.get('phone')
-    house_id=request.data.get('house_id')
-    if not Favorites.objects.filter(house_id=house_id and phone=phone)
-    return Response({
-        'code':'200','message':'suceess!'
-    },status=status.HTTP_200_OK)
+    try:
+        user_id=request.data.get('user_id')
+        house_id=request.data.get('house_id')
+        if not user_id or not house_id:
+         return Response({
+            'code': '400',
+            'message': 'user_id 和 house_id 不能为空'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user=Users.objects.get(user_id=user_id)
+            house=Houses.objects.get(house_id=house_id)
+        except Users.DoesNotExist or Houses.DoesNotExist:
+            return Response({
+                        'code': '400',
+                        'message': 'user_id 或 house_id 有误'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if Favorites.objects.filter(user=user,house=house):
+             return Response({
+                        'code': '400',
+                        'message': '对象已经存在！'
+                        }, status=status.HTTP_400_BAD_REQUEST)
+        
+        fav=Favorites(user=user,house=house)
+        fav.save()
+        return Response({
+                        'code': '200',
+                        'message': 'success!'
+                        }, status=status.HTTP_200_OK)
+    except Exception as e:
+         return Response(
+                    {'code': 500, 'message': f'加入失败: {str(e)}'},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )

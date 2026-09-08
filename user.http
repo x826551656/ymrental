@@ -12,3 +12,11 @@ Content-Type: application/json
 {
     "phone":"12345678901"
 }
+###
+POST http://127.0.0.1:8000/houses/api/user/add_favor
+Content-Type: application/json
+
+{
+    "user_id":"kViFbYXEi7MLLZxKa7jUk7",
+    "house_id":"DEMO_H"
+}
