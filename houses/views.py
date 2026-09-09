@@ -1,3 +1,4 @@
+from pickle import GET
 from urllib import response
 
 from django.shortcuts import render
@@ -171,6 +172,8 @@ def update_user_to_landlord(request):
 
 @api_view(['POST'])
 def add_favor(request):
+
+
     """
     {
     'user_id':"1",
@@ -211,3 +214,31 @@ def add_favor(request):
                     {'code': 500, 'message': f'加入失败: {str(e)}'},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+
+
+@api_view(["GET"])
+def get_available_houses(request):
+    houses = Houses.objects.filter().values(
+        "house_id",
+        "title",
+        "address",
+        "business_area",
+        "house_type",
+        "layout",
+        "area_sqm",
+        "orientation",
+        "floor_info",
+        "decoration",
+        "monthly_rent",
+        "deposit",
+        "payment_method",
+        "status",
+        "publish_time",
+        "other",
+    )
+
+    return Response({
+        "code": 200,
+        "message": "查询成功",
+        "data": list(houses),
+    }, status=status.HTTP_200_OK)
