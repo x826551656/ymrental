@@ -2,7 +2,7 @@ POST http://127.0.0.1:8000/houses/api/login
 Content-Type: application/json
 
 {
-"phone":"15587497585",
+"phone":"15587497585"
 }
 ###
 
@@ -20,3 +20,6 @@ Content-Type: application/json
     "user_id":"kViFbYXEi7MLLZxKa7jUk7",
     "house_id":"DEMO_H"
 }
+
+###
+GET http://127.0.0.1:8000/houses/api/houses/available/
