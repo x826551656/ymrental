@@ -4,13 +4,13 @@ from urllib import response
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework import status
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Houses,Users
 from.favorites import Favorites
+from houses import favorites
 # Create your views here.
 @api_view(['POST'])
 def register(request):
@@ -197,15 +197,18 @@ def add_favor(request):
                         'message': 'user_id 或 house_id 有误'
                         }, status=status.HTTP_400_BAD_REQUEST)
         
-        if Favorites.objects.filter(user=user,house=house):
-             return Response({
-                        'code': '400',
-                        'message': '对象已经存在！'
-                        }, status=status.HTTP_400_BAD_REQUEST)
-        
-        fav=Favorites(user=user,house=house)
-        fav.save()
-        return Response({
+        fav=Favorites.objects.filter(user=user, house=house).first()
+        if fav:
+            fav.delete()
+            return Response({
+                'code': 200,
+                'message': '已取消收藏',
+                'action': 'removed',
+                'is_favorited': False,
+            }, status=status.HTTP_200_OK)
+        else:
+            Favorites.objects.create(user=user, house=house)
+            return Response({
                         'code': '200',
                         'message': 'success!'
                         }, status=status.HTTP_200_OK)
@@ -219,6 +222,42 @@ def add_favor(request):
 @api_view(["GET"])
 def get_available_houses(request):
     houses = Houses.objects.filter().values(
+        "house_id",
+        "title",
+        "address",
+        "business_area",
+        "house_type",
+        "layout",
+        "area_sqm",
+        "orientation",
+        "floor_info",
+        "decoration",
+        "monthly_rent",
+        "deposit",
+        "payment_method",
+        "status",
+        "publish_time",
+        "other",
+    )
+
+    return Response({
+        "code": 200,
+        "message": "查询成功",
+        "data": list(houses),
+    }, status=status.HTTP_200_OK)
+
+@api_view(["GET"])
+def get_favorate_houses(request):
+    """
+     GET /houses/api/user/get_favor/?user_id=xxx
+    """
+    user_id = request.query_params.get('user_id')
+    if not user_id:
+        return Response({
+            'code':'400','message':'用户id不可为空！'
+        },status=status.HTTP_400_BAD_REQUEST)
+    user=Users.objects.get(user_id=user_id)
+    houses=Houses.objects.filter(favorites__user=user).values(
         "house_id",
         "title",
         "address",

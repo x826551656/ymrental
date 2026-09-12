@@ -6,6 +6,6 @@ urlpatterns = [
     path("api/login/",views.login,name="login"),
     path('api/user/to_landlord/',views.update_user_to_landlord,name="to_landlord"),
     path("api/user/add_favor/",views.add_favor,name="add_favor"),
-    path("api/houses/available/",views.get_available_houses,name="available_houses",
-),
+    path("api/houses/available/",views.get_available_houses,name="available_houses"),
+    path("api/user/get_favor/",views.get_favorate_houses,name="get_favorate_houses"),
 ]

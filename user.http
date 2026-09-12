@@ -23,3 +23,10 @@ Content-Type: application/json
 
 ###
 GET http://127.0.0.1:8000/houses/api/houses/available/
+###
+GET  http://127.0.0.1:8000/houses/api/user/get_favor/
+Content-Type: application/json
+
+{
+    "user_id":"kViFbYXEi7MLLZxKa7jUk7"
+}
