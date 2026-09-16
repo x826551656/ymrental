@@ -8,4 +8,5 @@ urlpatterns = [
     path("api/user/add_favor/",views.add_favor,name="add_favor"),
     path("api/houses/available/",views.get_available_houses,name="available_houses"),
     path("api/user/get_favor/",views.get_favorate_houses,name="get_favorate_houses"),
+    path("api/houses/add_house/",views.add_house,name="add_house")
 ]

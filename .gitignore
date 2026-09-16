@@ -4,3 +4,5 @@ env.text
 *.pyc
 houses/__pycache__
 .vscode/
+.backups/
+restore_original_database.py

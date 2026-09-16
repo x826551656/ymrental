@@ -27,7 +27,7 @@ class Users(models.Model):
 
 
 class Houses(models.Model):
-    house_id = models.CharField(primary_key=True, max_length=32)
+    house_id = ShortUUIDField(primary_key=True)
     owner = models.ForeignKey(Users, models.DO_NOTHING)
     title = models.CharField(max_length=100)
     address = models.CharField(max_length=200)
@@ -42,7 +42,7 @@ class Houses(models.Model):
     deposit = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=30, blank=True, null=True)
     status = models.CharField(max_length=32)
-    publish_time = models.DateTimeField()
+    publish_time = models.DateTimeField(auto_now_add=True)
     other = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:

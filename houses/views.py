@@ -7,6 +7,9 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+
+import houses
 
 from .models import Houses,Users
 from.favorites import Favorites
@@ -248,10 +251,12 @@ def get_available_houses(request):
 
 @api_view(["GET"])
 def get_favorate_houses(request):
+
+
     """
      GET /houses/api/user/get_favor/?user_id=xxx
     """
-    user_id = request.query_params.get('user_id')
+    user_id=request.data.get('user_id')
     if not user_id:
         return Response({
             'code':'400','message':'用户id不可为空！'
@@ -281,3 +286,55 @@ def get_favorate_houses(request):
         "message": "查询成功",
         "data": list(houses),
     }, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def add_house(request):
+    """
+    {
+      "house_id": "DEMO_H",
+      "title": "课程演示房源",
+      "address": "虚构路1号",
+      "business_area": "演示商圈",
+      "house_type": "整租",
+      "layout": "一室一厅",
+      "area_sqm": 40.0,
+      "orientation": null,
+      "floor_info": null,
+      "decoration": null,
+      "monthly_rent": 2000.0,
+      "deposit": 2000.0,
+      "payment_method": "押一付三",
+      "status": "已出租",
+      "publish_time": "2026-09-07T11:36:47Z",
+      "other": null
+    }
+    """
+    try:
+        permission_classes=[IsAuthenticated]
+        house=request.data
+        user_id=request.user.id
+        user_id="ikbFLPp6zDrtSMFbdVp56J"
+        owner=Users.objects.get(user_id=user_id)
+        print(owner.real_name)
+        house['owner_id']=user_id
+        house=Houses.objects.create(**house)
+        
+        # if not user_id:
+        #     return Response({
+        #                     "code": 400,
+        #                     "message": "用户id不可为空",
+        #                 }, status=status.HTTP_400_BAD_REQUEST)
+        
+        print(house)
+        print(user_id)
+        return Response({
+                "code": 201,
+                "message": "success!",
+            }, status=status.HTTP_201_CREATED)
+    except Exception as e:
+             return Response(
+                        {'code': 500, 'message': f'加入失败: {str(e)}'},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
+    

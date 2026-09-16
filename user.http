@@ -28,5 +28,26 @@ GET  http://127.0.0.1:8000/houses/api/user/get_favor/
 Content-Type: application/json
 
 {
-    "user_id":"kViFbYXEi7MLLZxKa7jUk7"
+    "user_id":""
 }
+
+###
+POST http://127.0.0.1:8000/houses/api/houses/add_house/
+Content-Type: application/json
+
+{
+      "title": "课程演示房源",
+      "address": "虚构路1号",
+      "business_area": "演示商圈",
+      "house_type": "整租",
+      "layout": "一室一厅",
+      "area_sqm": 40.0,
+      "orientation": null,
+      "floor_info": null,
+      "decoration": null,
+      "monthly_rent": 2000.0,
+      "deposit": 2000.0,
+      "payment_method": "押一付三",
+      "status": "待审核",
+      "other": null
+    }

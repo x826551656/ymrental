@@ -24,7 +24,8 @@ SECRET_KEY = 'django-insecure-rx(!&%i1p9ms^u1v*05s@*_lr=tcu$ge0h8#^&@3h1wvy8nyi&
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+TIME_ZONE='Asia/Shanghai'
+USE_TZ=True
 ALLOWED_HOSTS = []
 
 # Application definition
