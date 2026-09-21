@@ -7,12 +7,12 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from shortuuidfield import ShortUUIDField
-
-class Users(models.Model):
-    user_id = ShortUUIDField(primary_key=True)
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+class Users(AbstractBaseUser, PermissionsMixin):
+    user_id = ShortUUIDField(primary_key=True, db_column='user_id')
     username = models.CharField(unique=True, max_length=30)
-    password = models.CharField(max_length=255)
-    real_name = models.CharField(max_length=20,blank=True)
+    # password 不写，AbstractBaseUser 自带，映射到表里的 password 列
+    real_name = models.CharField(max_length=20, blank=True)
     phone = models.CharField(unique=True, max_length=11)
     email = models.CharField(max_length=50, blank=True, null=True)
     role = models.CharField(max_length=32)
@@ -21,9 +21,16 @@ class Users(models.Model):
     status = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    is_active = models.BooleanField(default=True)   # 表里没有就加列
+    is_staff = models.BooleanField(default=False)   # 表里没有就加列
+
+    objects = UsersManager()
+
+    USERNAME_FIELD = 'phone'
+    REQUIRED_FIELDS = ['username']
+
     class Meta:
-        managed = False
-        db_table = 'Users'
+        db_table = 'user'
 
 
 class Houses(models.Model):

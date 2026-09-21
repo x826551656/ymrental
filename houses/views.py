@@ -2,13 +2,13 @@ from pickle import GET
 from urllib import response
 
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-
+from  .decorators import role_required
 import houses
 
 from .models import Houses,Users
@@ -137,41 +137,86 @@ def login(request):
         )
 
 @api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+@role_required("admin")
 def update_user_to_landlord(request):
     """
-    将用户角色更新为房东
+    将目标用户角色更新为房东
     请求体: {
-        "phone": ”12345678901”,
+        "user_id": ”12345678901”,
     }
     """
     try:
-        phone=request.data.get('phone')
-        if(not phone):
+        admin_id=request.user.id
+        user_id=request.data.get("user_id")
+        if not admin_id:
+             return Response({
+                "code":"400",
+                "massage":"操作人不存在"
+            },status=status.HTTP_400_BAD_REQUEST)
+        if(not user_id):
             return Response({
                 "code":"400",
-                "massage":"用户手机不能为空"
+                "massage":"用户id不能为空"
             },status=status.HTTP_400_BAD_REQUEST)
         try:
-            user=Users.objects.get(phone=phone)
+            user=Users.objects.get(user_id=user_id)
         except Users.DoesNotExist:
             return Response({
                 'code':'400','message':'所请求的用户不存在！'
             },status=status.HTTP_400_BAD_REQUEST)
         if user.role=="业主":
+            user.role="租客"
+            user.save()
             return Response({
                 "code":"400",
-                "message":"用户已是房东"
+                "message":"业主已经切换为租客",
+                "action":"cancel",
+                "detail":'操作人{admin_id}'
             },status=status.HTTP_400_BAD_REQUEST)
         user.role="业主"
         user.save()
         return Response({
-            "code":"200","message":"successs!"
+            "code":"200","message":"租客已经切换为业主","action":"done",
 
         },status=status.HTTP_200_OK)
     except Exception as e:
         return Response({
             'code':'500','message':f'切换失败{str(e)}'
         },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def get_role(request):
+    """
+    请求体{
+    "user_id":xxxx
+    }
+    """
+    try:
+        user_id=request.data.get("user_id")
+        if not user_id:
+            return Response(
+                {'code': 400, 'message': '用户id不可为空!'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:user=Users.objects.get(user_id=user_id)
+        except Users.DoesNotExist:
+            return Response(
+                {'code': 401, 'message': '用户名不存在'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        role=user.role
+        return Response({
+        "code": 200,
+        "message": "查询成功",
+        "data":str(role),
+    }, status=status.HTTP_200_OK)
+    except Exception as e:
+         return Response(
+            {'code': 500, 'message': f'{str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
 
 @api_view(['POST'])
 def add_favor(request):
@@ -320,11 +365,11 @@ def add_house(request):
         house['owner_id']=user_id
         house=Houses.objects.create(**house)
         
-        # if not user_id:
-        #     return Response({
-        #                     "code": 400,
-        #                     "message": "用户id不可为空",
-        #                 }, status=status.HTTP_400_BAD_REQUEST)
+        if not user_id:
+            return Response({
+                            "code": 400,
+                            "message": "用户id不可为空",
+                        }, status=status.HTTP_400_BAD_REQUEST)
         
         print(house)
         print(user_id)
@@ -337,4 +382,6 @@ def add_house(request):
                         {'code': 500, 'message': f'加入失败: {str(e)}'},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR
                     )
-    
+
+
+  

@@ -1,0 +1,21 @@
+@baseUrl = http://localhost:8000
+
+### 1. 获取 Token
+# @name login
+POST {{baseUrl}}/houses/api/login/
+Content-Type: application/json
+
+{
+    "phone":"15587497585"
+}
+
+### 2. 自动提取 Access Token 作为变量
+@accessToken ={{login.response.body.data.access}}
+
+PATCH http://127.0.0.1:8000/houses/api/user/to_landlord/
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "phone":"kViFbYXEi7MLLZxKa7jUk7"
+}

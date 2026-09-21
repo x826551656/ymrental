@@ -10,7 +10,7 @@ PATCH http://127.0.0.1:8000/houses/api/user/to_landlord
 Content-Type: application/json
 
 {
-    "phone":"12345678901"
+    "phone":"kViFbYXEi7MLLZxKa7jUk7"
 }
 ###
 POST http://127.0.0.1:8000/houses/api/user/add_favor
@@ -51,3 +51,10 @@ Content-Type: application/json
       "status": "待审核",
       "other": null
     }
+###
+GET  http://127.0.0.1:8000/houses/api/user/get_role/
+Content-Type: application/json
+
+{
+    "user_id":"kViFbYXEi7MLLZxKa7jUk7"
+}
